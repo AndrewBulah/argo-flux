@@ -25,6 +25,7 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-system
+<<<<<<< HEAD
 
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
@@ -39,3 +40,5 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-system
+=======
+>>>>>>> fff234436d9e89fcbb25022137bd786444fae706
