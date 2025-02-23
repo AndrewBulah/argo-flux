@@ -3,7 +3,7 @@ kind: Application
 metadata:
   name: app
   namespace: argocd
-  uid: 0ee15678-7e06-4db5-8daf-ea16a1f28fc5
+
 spec:
   destination:
     namespace: test
