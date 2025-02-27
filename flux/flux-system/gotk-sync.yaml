@@ -33,7 +33,7 @@ metadata:
   namespace: flux-system
 spec:
   interval: 10m0s
-  path: ./ci-cd
+  path: ./ci-cd_test
   prune: true
   sourceRef:
     kind: GitRepository
