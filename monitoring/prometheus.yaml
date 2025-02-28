@@ -233,17 +233,13 @@ kind: Service
 metadata:
   name: prometheus-service
   namespace: monitoring
-  annotations:
-      prometheus.io/scrape: 'true'
-      prometheus.io/port:   '9090'
 spec:
+  type: LoadBalancer
   selector:
     app: prometheus-server
-  type: NodePort
   ports:
-    - port: 8080
+    - port: 9090
       targetPort: 9090
-      nodePort: 30003
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
