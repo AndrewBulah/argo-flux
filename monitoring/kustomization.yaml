@@ -4,3 +4,6 @@ kind: Kustomization
 resources:
   - .ns.yaml
   - zabbix.yaml
+  - prometheus.yaml
+  - node-exporter.yaml
+  - ksm.yaml
