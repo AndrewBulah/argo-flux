@@ -72,7 +72,7 @@ metadata:
   labels:
     run: zabbix-service
 spec:
-  type: ClusterIP
+  type: LoadBalancer
   selector:
     app: zabbix-server
   ports:
