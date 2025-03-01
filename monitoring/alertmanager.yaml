@@ -54,8 +54,8 @@ data:
     receivers:
     - name: 'slack-notifications'
       slack_configs:
-      - api_url: 'https://hooks.slack.com/services/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'
-        channel: '@D085K0NH60Y'
+      - api_url: $(SLACK_API_URL)
+        channel: '@D08FQ0WNA7L'
         send_resolved: true
         text: "{{ range .Alerts }}{{ .Annotations.summary }}\n{{ .Annotations.description }}\n{{ end }}"
 ---
