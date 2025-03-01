@@ -53,8 +53,8 @@ data:
     receivers:
     - name: 'slack-notifications'
       slack_configs:
-      - api_url: $(SLACK_API_URL)
-        channel: '@D085K0NH60Y'
+      - api_url: $(SLACK_API_URL)  # Использует переменную из Secret
+        channel: '@D085K0NH60Y'   # Ваш user ID в Slack
         send_resolved: true
         text: "{{ range .Alerts }}{{ .Annotations.summary }}\n{{ .Annotations.description }}\n{{ end }}"
 ---
