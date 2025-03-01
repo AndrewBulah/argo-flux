@@ -1,0 +1,72 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: alertmanager
+  namespace: monitoring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: alertmanager
+  template:
+    metadata:
+      labels:
+        app: alertmanager
+    spec:
+      containers:
+      - name: alertmanager
+        image: prom/alertmanager
+        args:
+          - "--config.file=/etc/alertmanager/config.yml"
+        ports:
+        - containerPort: 9093
+        env:
+          - name: SLACK_API_URL
+            valueFrom:
+              secretKeyRef:
+                name: slack-webhook
+                key: slack_api_url
+        volumeMounts:
+        - name: config-volume
+          mountPath: /etc/alertmanager/
+      volumes:
+      - name: config-volume
+        configMap:
+          name: alertmanager-config
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: alertmanager-config
+  namespace: monitoring
+data:
+  config.yml: |-
+    global:
+      resolve_timeout: 5m
+    route:
+      receiver: 'slack-notifications'
+      group_by: ['alertname']
+      group_wait: 30s
+      group_interval: 5m
+      repeat_interval: 3h
+    receivers:
+    - name: 'slack-notifications'
+      slack_configs:
+      - api_url: $(SLACK_API_URL)
+        channel: '@D085K0NH60Y'
+        send_resolved: true
+        text: "{{ range .Alerts }}{{ .Annotations.summary }}\n{{ .Annotations.description }}\n{{ end }}"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: alertmanager
+  namespace: monitoring
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 9093
+    targetPort: 9093
+  selector:
+    app: alertmanager
