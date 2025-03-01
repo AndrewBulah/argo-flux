@@ -17,6 +17,7 @@ spec:
       containers:
       - name: alertmanager
         image: prom/alertmanager
+        command: ["sh", "-c", "printenv && sleep 3600"]
         args:
           - "--config.file=/etc/alertmanager/config.yml"
         ports:
@@ -53,8 +54,8 @@ data:
     receivers:
     - name: 'slack-notifications'
       slack_configs:
-      - api_url: $(SLACK_API_URL)  # Использует переменную из Secret
-        channel: '@D085K0NH60Y'   # Ваш user ID в Slack
+      - api_url: 'https://hooks.slack.com/services/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'
+        channel: '@D085K0NH60Y'
         send_resolved: true
         text: "{{ range .Alerts }}{{ .Annotations.summary }}\n{{ .Annotations.description }}\n{{ end }}"
 ---
