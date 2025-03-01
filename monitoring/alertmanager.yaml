@@ -22,12 +22,6 @@ spec:
           - "--web.listen-address=0.0.0.0:9093"
         ports:
         - containerPort: 9093
-        env:
-          - name: SLACK_API_URL
-            valueFrom:
-              secretKeyRef:
-                name: slack-webhook
-                key: slack_api_url
         volumeMounts:
         - name: config-volume
           mountPath: /etc/alertmanager/
