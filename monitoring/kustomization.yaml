@@ -9,3 +9,5 @@ resources:
   - ksm.yaml
   - grafana.yaml
   - alertmanager.yaml
+  - slack-role.yaml
+  - slack-rolebinding.yaml
