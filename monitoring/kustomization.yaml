@@ -7,3 +7,4 @@ resources:
   - prometheus.yaml
   - node-exporter.yaml
   - ksm.yaml
+  - grafana.yaml
