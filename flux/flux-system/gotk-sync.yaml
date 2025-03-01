@@ -11,7 +11,7 @@ spec:
     branch: main
   secretRef:
     name: flux-system
-  url: https://github.com/AndrewBulah/argo-flux.git
+  url: ssh://git@github.com/AndrewBulah/argo-flux
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
@@ -25,6 +25,10 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-system
+<<<<<<< HEAD
+=======
+
+>>>>>>> 90b037db443f23cfe366e2846dd8c80a2c179c7e
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
