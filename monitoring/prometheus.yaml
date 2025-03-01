@@ -39,6 +39,8 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: prometheus-server-conf
+  labels:
+    name: prometheus-server-conf
   namespace: monitoring
 data:
   prometheus.rules: |-
@@ -52,14 +54,6 @@ data:
           severity: slack
         annotations:
           summary: High Memory Usage
-      - alert: HighCPUUsage  # Новое правило для CPU
-        expr: (1 - avg(rate(node_cpu_seconds_total{mode="idle"}[5m])) by (instance) * 100 > 80
-        for: 1m
-        labels:
-          severity: slack
-        annotations:
-          summary: "High CPU Usage on {{ $labels.instance }}"
-          description: "CPU usage is above 80% for the last 1 minute."
   prometheus.yml: |-
     global:
       scrape_interval: 5s
@@ -85,20 +79,27 @@ data:
         kubernetes_sd_configs:
         - role: endpoints
         scheme: https
+
         tls_config:
           ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
         bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+
         relabel_configs:
         - source_labels: [__meta_kubernetes_namespace, __meta_kubernetes_service_name, __meta_kubernetes_endpoint_port_name]
           action: keep
           regex: default;kubernetes;https
+
       - job_name: 'kubernetes-nodes'
+
         scheme: https
+
         tls_config:
           ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
         bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+
         kubernetes_sd_configs:
         - role: node
+
         relabel_configs:
         - action: labelmap
           regex: __meta_kubernetes_node_label_(.+)
@@ -109,8 +110,10 @@ data:
           target_label: __metrics_path__
           replacement: /api/v1/nodes/${1}/proxy/metrics
       - job_name: 'kubernetes-pods'
+
         kubernetes_sd_configs:
         - role: pod
+
         relabel_configs:
         - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
           action: keep
@@ -134,13 +137,18 @@ data:
       - job_name: 'kube-state-metrics'
         static_configs:
           - targets: ['kube-state-metrics:8080']
+
       - job_name: 'kubernetes-cadvisor'
+
         scheme: https
+
         tls_config:
           ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
         bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+
         kubernetes_sd_configs:
         - role: node
+
         relabel_configs:
         - action: labelmap
           regex: __meta_kubernetes_node_label_(.+)
@@ -151,8 +159,10 @@ data:
           target_label: __metrics_path__
           replacement: /api/v1/nodes/${1}/proxy/metrics/cadvisor
       - job_name: 'kubernetes-service-endpoints'
+
         kubernetes_sd_configs:
         - role: endpoints
+
         relabel_configs:
         - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_scrape]
           action: keep
@@ -185,6 +195,8 @@ kind: Deployment
 metadata:
   name: prometheus-deployment
   namespace: monitoring
+  labels:
+    app: prometheus-server
 spec:
   replicas: 1
   selector:
@@ -211,6 +223,7 @@ spec:
       volumes:
         - name: prometheus-config-volume
           configMap:
+            defaultMode: 420
             name: prometheus-server-conf
         - name: prometheus-storage-volume
           emptyDir: {}
@@ -223,28 +236,8 @@ metadata:
   namespace: monitoring
 spec:
   type: LoadBalancer
+  selector:
+    app: prometheus-server
   ports:
     - port: 9090
       targetPort: 9090
-  selector:
-    app: prometheus-server
-
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: prometheus-ingress
-  namespace: monitoring
-spec:
-  ingressClassName: nginx
-  rules:
-    - host: prometheus.k8s-1.sa
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: prometheus-service
-                port:
-                  number: 9090
