@@ -7,7 +7,7 @@ metadata:
 data:
   alertmanager.yml: |
     global:
-      slack_api_url: "https://hooks.slack.com/services/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"
+      slack_api_url: $(SLACK_API_URL)
     route:
       receiver: slack-notifications
     receivers:
@@ -40,6 +40,12 @@ spec:
             - "--storage.path=/alertmanager"
           ports:
             - containerPort: 9093
+          env:
+            - name: SLACK_API_URL
+              valueFrom:
+                secretKeyRef:
+                  name: slack-webhook
+                  key: slack_api_url
           volumeMounts:
             - name: config-volume
               mountPath: /etc/alertmanager
