@@ -17,11 +17,7 @@ data:
     receivers:
     - name: 'slack-notifications'
       slack_configs:
-      - api_url: 
-          valueFrom:
-            secretKeyRef:
-              name: alertmanager-slack-secret
-              key: slack_webhook_url
+      - api_url:  ${SLACK_WEBHOOK_URL}
         channel: '#D085K0NH60Y'
         send_resolved: true
         title: '{{ .CommonLabels.alertname }}'
@@ -48,7 +44,7 @@ spec:
     spec:
       containers:
       - name: alertmanager
-        image: prom/alertmanager:v0.25.0
+        image: prom/alertmanager:v0.27.0
         args:
           - "--config.file=/etc/alertmanager/alertmanager.yml"
           - "--storage.path=/alertmanager"
