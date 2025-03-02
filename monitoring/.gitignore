@@ -1,3 +1,4 @@
 alertmanager-secret.yaml
 alertmanager-pvc.yaml
 alertmanager.yaml
+stress-test.yaml

@@ -47,13 +47,13 @@ data:
     - name: cpu-alerts
       rules:
       - alert: HighCPUUsage
-        expr: (100 - (avg by (instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100)) > 80
-        for: 5m
+        expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[2m])) * 100 > 70
+        for: 3m
         labels:
           severity: warning
         annotations:
-          summary: High CPU usage on {{ $labels.instance }}
-          description: CPU usage is above 80% (current value: {{ $value }}%)
+          summary: "High CPU usage on {{ $labels.instance }}"
+          description: "CPU usage is above 80% (current value: {{ $value }}%)"
   prometheus.yml: |-
     global:
       scrape_interval: 5s
@@ -220,7 +220,7 @@ metadata:
   annotations:
       prometheus.io/scrape: 'true'
       prometheus.io/port:   '9090'
-spec: 
+spec:
   selector:
     app: prometheus-server
   type: LoadBalancer
