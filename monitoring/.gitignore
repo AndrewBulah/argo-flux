@@ -1,2 +1,2 @@
 alertmanager-secret.yaml
-alertmanager-secret.yaml
+alertmanager-pvc.yaml

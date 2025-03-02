@@ -10,14 +10,18 @@ data:
       resolve_timeout: 5m
     route:
       receiver: 'slack-notifications'
-      group_by: ['alertname']
+      group_by: [alertname]
       group_wait: 10s
       group_interval: 5m
       repeat_interval: 3h
     receivers:
     - name: 'slack-notifications'
       slack_configs:
-      - api_url:  ${SLACK_WEBHOOK_URL}
+      - api_url:
+          valueFrom:
+            secretKeyRef:
+              name: alertmanager-slack-secret
+              key: slack_webhook_url
         channel: '#D085K0NH60Y'
         send_resolved: true
         title: '{{ .CommonLabels.alertname }}'
@@ -53,6 +57,8 @@ spec:
         volumeMounts:
         - name: config-volume
           mountPath: /etc/alertmanager
+        - name: storage-volume  # Добавлено монтирование PVC
+          mountPath: /alertmanager
         resources:
           requests:
             cpu: 100m
@@ -80,6 +86,9 @@ spec:
       - name: config-volume
         configMap:
           name: alertmanager-config
+      - name: storage-volume  # Добавлен Volume для PVC
+        persistentVolumeClaim:
+          claimName: alertmanager-pvc
 ---
 apiVersion: v1
 kind: Service
@@ -93,7 +102,6 @@ spec:
       targetPort: 9093
   selector:
     app: alertmanager
-
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
